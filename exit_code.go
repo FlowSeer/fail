@@ -1,9 +1,12 @@
 package fail
 
+// DefaultExitCode is the default exit code to use when no specific exit code is set.
+const DefaultExitCode = 1
+
 // ErrorExitCode is an error type that provides a program exit code.
 //
 // Implementations of this interface should return a non-zero exit code to indicate failure.
-// If no specific exit code is set, ErrorExitCode() should return 1 by default.
+// If no specific exit code is set, ErrorExitCode() should return DefaultExitCode by default.
 //
 // Example usage:
 //
@@ -19,7 +22,7 @@ type ErrorExitCode interface {
 	// ErrorExitCode returns the program exit code associated with this error.
 	//
 	// This value is intended to be used as the process exit status.
-	// If no exit code is explicitly set, implementations should return 1.
+	// If no exit code is explicitly set, implementations should return DefaultExitCode.
 	ErrorExitCode() int
 }
 
@@ -30,7 +33,7 @@ type ErrorExitCode interface {
 //  2. If err implements ErrorExitCode, it returns the result of ErrorExitCode().
 //  3. Otherwise, it recursively examines the direct causes of err (using Causes(err)).
 //     If any cause implements ErrorExitCode, it returns the maximum exit code found among them.
-//  4. If no exit code is found, it returns 1 (default failure exit code).
+//  4. If no exit code is found, it returns DefaultExitCode.
 //
 // This allows error types to specify custom exit codes, and for composed/multi-cause errors
 // to propagate the most severe exit code.
@@ -43,7 +46,7 @@ func ExitCode(err error) int {
 		return exitCode.ErrorExitCode()
 	}
 
-	maxExitCode := 1
+	maxExitCode := DefaultExitCode
 	for _, cause := range Causes(err) {
 		if exitCode, ok := cause.(ErrorExitCode); ok {
 			if exitCode.ErrorExitCode() > maxExitCode {

@@ -1,10 +1,13 @@
 package fail
 
+// DefaultHttpStatusCode is the default HTTP status code to use when no specific status code is set.
+const DefaultHttpStatusCode = 500
+
 // ErrorHttpStatusCode is an error type that provides an associated HTTP status code.
 //
 // Implementations of this interface should return a valid HTTP status code (such as 404, 500)
 // to indicate the nature of the error in HTTP responses. If no specific status code is set,
-// ErrorHttpStatusCode() should return 500 by default.
+// ErrorHttpStatusCode() should return DefaultHttpStatusCode by default.
 //
 // Example usage:
 //
@@ -20,7 +23,7 @@ type ErrorHttpStatusCode interface {
 	// ErrorHttpStatusCode returns the HTTP status code associated with this error.
 	//
 	// This value is intended to be used as the HTTP response status.
-	// If no status code is explicitly set, implementations should return 500.
+	// If no status code is explicitly set, implementations should return DefaultHttpStatusCode.
 	ErrorHttpStatusCode() int
 }
 
@@ -31,7 +34,7 @@ type ErrorHttpStatusCode interface {
 //  2. If err implements ErrorHttpStatusCode, it returns the result of ErrorHttpStatusCode().
 //  3. Otherwise, it recursively examines the direct causes of err (using Causes(err)).
 //     If any cause implements ErrorHttpStatusCode, it returns the maximum status code found among them.
-//  4. If no status code is found, it returns 500 (default internal server error).
+//  4. If no status code is found, it returns DefaultHttpStatusCode.
 //
 // This allows error types to specify custom HTTP status codes, and for composed/multi-cause errors
 // to propagate the most severe status code.
@@ -44,7 +47,7 @@ func HttpStatusCode(err error) int {
 		return httpStatusCode.ErrorHttpStatusCode()
 	}
 
-	maxHttpStatusCode := 500
+	maxHttpStatusCode := DefaultHttpStatusCode
 	for _, cause := range Causes(err) {
 		if httpStatusCode, ok := cause.(ErrorHttpStatusCode); ok {
 			if httpStatusCode.ErrorHttpStatusCode() > maxHttpStatusCode {
