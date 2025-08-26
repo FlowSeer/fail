@@ -1,5 +1,14 @@
 package fail
 
+// EmptyMessage is a constant string that represents an empty or unknown error message.
+//
+// This value is used as a default when no specific error message is available.
+// It can be useful in situations where an error message is required but not provided,
+// such as when handling nil errors or when a more detailed error message is not available.
+//
+// Example usage:
+const EmptyMessage = "Unknown error"
+
 // ErrorMessage is an error type that provides a canonical, programmatic error message,
 // distinct from the standard Error() string.
 //

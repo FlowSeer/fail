@@ -14,6 +14,7 @@ type Fail struct {
 	msg     string // The main error message (required, never empty)
 	userMsg string // Optional user-facing message
 
+	domain         string // Domain of the error
 	code           string // Application-specific error code
 	exitCode       int    // Process exit code
 	httpStatusCode int    // HTTP status code
@@ -23,6 +24,9 @@ type Fail struct {
 
 	tags  map[string]struct{} // Set of string tags
 	attrs map[string]any      // Arbitrary key-value attributes
+
+	spanId  string // spanId is the unique identifier for the tracing span associated with this error.
+	traceId string // traceId is the unique identifier for the tracing trace associated with this error.
 }
 
 // newFail creates a new Fail error with the given message.
@@ -30,10 +34,6 @@ type Fail struct {
 // The message must not be an empty string. The returned Fail will have default values
 // for code, exitCode, httpStatusCode, and empty tags/attributes.
 func newFail(msg string) Fail {
-	if msg == "" {
-		panic("fail message must not be an empty string")
-	}
-
 	return Fail{
 		msg:            msg,
 		code:           DefaultErrorCode,

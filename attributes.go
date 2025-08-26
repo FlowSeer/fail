@@ -1,5 +1,7 @@
 package fail
 
+import "context"
+
 // ErrorAttributes is an error type that provides a set of key-value attributes associated with the error.
 //
 // Implementations of this interface should return a map of attributes that describe or provide
@@ -44,4 +46,52 @@ func Attributes(err error) map[string]any {
 		}
 	}
 	return map[string]any{}
+}
+
+// attributesContextKey is an unexported type used as the key for storing
+// and retrieving error attributes in a context.Context.
+type attributesContextKey struct{}
+
+// ContextWithAttributes returns a new context.Context that carries the provided
+// error attributes map. If attributes are already set in the context, they are overwritten
+// with the new value.
+//
+// Example usage:
+//
+//	ctx := ContextWithAttributes(context.Background(), map[string]any{"foo": 42})
+func ContextWithAttributes(ctx context.Context, attrs map[string]any) context.Context {
+	return context.WithValue(ctx, attributesContextKey{}, attrs)
+}
+
+// ContextAddAttributes returns a new context.Context with the provided attributes merged
+// into any existing attributes in the context. If no attributes are present, it behaves like ContextWithAttributes.
+// If the same key exists in both the existing and new attributes, the value from attrs overwrites the existing value.
+//
+// Example usage:
+//
+//	ctx := ContextAddAttributes(ctx, map[string]any{"bar": "baz"})
+func ContextAddAttributes(ctx context.Context, attrs map[string]any) context.Context {
+	existingAttrs := AttributesFromContext(ctx)
+	merged := make(map[string]any, len(existingAttrs)+len(attrs))
+	for k, v := range existingAttrs {
+		merged[k] = v
+	}
+	for k, v := range attrs {
+		merged[k] = v
+	}
+	return ContextWithAttributes(ctx, merged)
+}
+
+// AttributesFromContext extracts the error attributes map from the provided context.
+// If no attributes are set in the context, AttributesFromContext returns nil.
+//
+// Example usage:
+//
+//	attrs := AttributesFromContext(ctx)
+func AttributesFromContext(ctx context.Context) map[string]any {
+	attrs, ok := ctx.Value(attributesContextKey{}).(map[string]any)
+	if !ok {
+		return nil
+	}
+	return attrs
 }
