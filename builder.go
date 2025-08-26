@@ -457,5 +457,9 @@ func (b Builder) Msgf(format string, args ...any) Builder {
 //	fmt.Println(fail.Code(err))        // "OPERATION_ERROR"
 //	fmt.Println(fail.Tags(err))        // ["critical"]
 func (b Builder) Build() Fail {
+	if b.msg == "" {
+		b.msg = EmptyMessage
+	}
+
 	return Fail(b)
 }
