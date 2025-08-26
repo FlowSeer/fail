@@ -41,8 +41,8 @@ func TraceId(err error) string {
 		return ""
 	}
 
-	if trace, ok := err.(ErrorTraceId); ok {
-		return trace.ErrorTraceId()
+	if t, ok := err.(ErrorTraceId); ok {
+		return t.ErrorTraceId()
 	}
 
 	return ""

@@ -1,6 +1,8 @@
 package fail
 
 import (
+	"time"
+
 	"github.com/FlowSeer/wz/maps"
 	"github.com/FlowSeer/wz/slices"
 )
@@ -11,6 +13,8 @@ import (
 // tags, and arbitrary attributes. This struct is intended to be used as the canonical error
 // implementation for the fail package.
 type Fail struct {
+	time time.Time // Timestamp of when the error occurred
+
 	msg     string // The main error message (required, never empty)
 	userMsg string // Optional user-facing message
 
@@ -162,4 +166,11 @@ func (f Fail) ErrorTags() []string {
 // Implements ErrorAttributes interface.
 func (f Fail) ErrorAttributes() map[string]any {
 	return maps.Clone(f.attrs)
+}
+
+// ErrorTime returns the timestamp of when the error occurred.
+//
+// Implements ErrorTime interface.
+func (f Fail) ErrorTime() time.Time {
+	return f.time
 }

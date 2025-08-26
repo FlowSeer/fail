@@ -3,6 +3,7 @@ package fail
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"go.opentelemetry.io/otel/trace"
 )
@@ -39,12 +40,32 @@ type Builder Fail
 // exit code (DefaultExitCode), and HTTP status code (DefaultHttpStatusCode).
 // The message must be set using Msg() or Msgf() to complete the error construction.
 // If no message is set, the message will be set to fail.EmptyMessage.
+// The timestamp will be automatically set to the current time when the error is built
+// if not explicitly set using the Time() method.
 //
 // Example:
 //
 //	builder := fail.New()
 func New() Builder {
 	return Builder(newFail(""))
+}
+
+// Time sets the timestamp for when the error occurred.
+//
+// If the provided time is not the zero value and is not in the future, it will be set as the error's time.
+// If no time is set or if the set time is in the future, the timestamp will be automatically set to the current time when the error is built using Msg() or Msgf().
+//
+// Example:
+//
+//	err := fail.New().
+//		Time(time.Now()).
+//		Msg("operation failed")
+func (b Builder) Time(t time.Time) Builder {
+	if !t.IsZero() && time.Now().After(t) {
+		b.time = t
+	}
+
+	return b
 }
 
 // Associate adds one or more associated errors to the builder.
@@ -406,6 +427,10 @@ func (b Builder) Msg(msg string) error {
 		b.msg = msg
 	} else {
 		b.msg = EmptyMessage
+	}
+
+	if b.time.IsZero() || b.time.After(time.Now()) {
+		b.time = time.Now()
 	}
 
 	return Fail(b)
