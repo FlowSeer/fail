@@ -12,13 +12,12 @@ import (
 //
 // The Builder implements a fluent interface that allows chaining method calls to construct
 // rich error objects. Each method returns the Builder itself, enabling method chaining.
-// The final Build() method returns a complete Fail error that implements all the fail.*
-// error interfaces.
+// The Msg() and Msgf() methods are terminal and return the complete Fail error that
+// implements all the fail.* error interfaces.
 //
 // Example usage:
 //
 //	err := fail.New().
-//		Msg("database connection failed").
 //		UserMsg("Unable to process your request. Please try again.").
 //		Code("DB_CONNECTION_ERROR").
 //		Domain(fail.DomainDatabase).
@@ -31,14 +30,14 @@ import (
 //		Associate(loggingError).
 //		TraceId("abcdef1234567890").
 //		SpanId("1234567890abcdef").
-//		Build()
+//		Msg("database connection failed")
 type Builder Fail
 
 // New creates a new Builder with an empty message.
 //
 // The returned Builder will have default values for code (DefaultErrorCode),
 // exit code (DefaultExitCode), and HTTP status code (DefaultHttpStatusCode).
-// The message must be set using Msg() or Msgf() before calling Build().
+// The message must be set using Msg() or Msgf() to complete the error construction.
 // If no message is set, the message will be set to fail.EmptyMessage.
 //
 // Example:
@@ -63,10 +62,9 @@ func New() Builder {
 // Example:
 //
 //	err := fail.New().
-//		Msg("file upload failed").
 //		Cause(networkError).
 //		Associate(diskWriteError, loggingError).
-//		Build()
+//		Msg("file upload failed")
 func (b Builder) Associate(errs ...error) Builder {
 	return b.AssociateSlice(errs)
 }
@@ -83,9 +81,8 @@ func (b Builder) Associate(errs ...error) Builder {
 //
 //	associatedErrors := []error{diskWriteError, loggingError}
 //	err := fail.New().
-//		Msg("file upload failed").
 //		AssociateSlice(associatedErrors).
-//		Build()
+//		Msg("file upload failed")
 func (b Builder) AssociateSlice(errs []error) Builder {
 	for _, err := range errs {
 		if err != nil {
@@ -106,9 +103,8 @@ func (b Builder) AssociateSlice(errs []error) Builder {
 // Example:
 //
 //	err := fail.New().
-//		Msg("database operation failed").
 //		Cause(connectionError, queryError).
-//		Build()
+//		Msg("database operation failed")
 func (b Builder) Cause(errs ...error) Builder {
 	return b.CauseSlice(errs)
 }
@@ -121,9 +117,8 @@ func (b Builder) Cause(errs ...error) Builder {
 //
 //	causeErrors := []error{connectionError, queryError}
 //	err := fail.New().
-//		Msg("database operation failed").
 //		CauseSlice(causeErrors).
-//		Build()
+//		Msg("database operation failed")
 func (b Builder) CauseSlice(errs []error) Builder {
 	for _, err := range errs {
 		if err != nil {
@@ -141,9 +136,8 @@ func (b Builder) CauseSlice(errs []error) Builder {
 // Example:
 //
 //	err := fail.New().
-//		Msg("API request failed").
 //		Tag("api", "network", "timeout").
-//		Build()
+//		Msg("API request failed")
 func (b Builder) Tag(tags ...string) Builder {
 	return b.TagSlice(tags)
 }
@@ -156,9 +150,8 @@ func (b Builder) Tag(tags ...string) Builder {
 //
 //	tags := []string{"database", "connection", "timeout"}
 //	err := fail.New().
-//		Msg("database connection failed").
 //		TagSlice(tags).
-//		Build()
+//		Msg("database connection failed")
 func (b Builder) TagSlice(tags []string) Builder {
 	for _, tag := range tags {
 		if tag != "" {
@@ -177,9 +170,8 @@ func (b Builder) TagSlice(tags []string) Builder {
 // Example:
 //
 //	err := fail.New().
-//		Msg("failed to connect to database").
 //		Domain(fail.DomainDatabase).
-//		Build()
+//		Msg("failed to connect to database")
 func (b Builder) Domain(domain string) Builder {
 	if domain != "" {
 		b.domain = domain
@@ -197,11 +189,10 @@ func (b Builder) Domain(domain string) Builder {
 // Example:
 //
 //	err := fail.New().
-//		Msg("user authentication failed").
 //		Attribute("user_id", "12345").
 //		Attribute("request_id", "req-abc-123").
 //		Attribute("attempt_count", 3).
-//		Build()
+//		Msg("user authentication failed")
 func (b Builder) Attribute(key string, value any) Builder {
 	return b.AttributeMap(map[string]any{key: value})
 }
@@ -218,9 +209,8 @@ func (b Builder) Attribute(key string, value any) Builder {
 //		"attempt_count": 3,
 //	}
 //	err := fail.New().
-//		Msg("user authentication failed").
 //		AttributeMap(attrs).
-//		Build()
+//		Msg("user authentication failed")
 func (b Builder) AttributeMap(attrs map[string]any) Builder {
 	for key, value := range attrs {
 		if key != "" && value != nil {
@@ -238,9 +228,8 @@ func (b Builder) AttributeMap(attrs map[string]any) Builder {
 // Example:
 //
 //	err := fail.New().
-//		Msg("invalid input provided").
 //		Code("VALIDATION_ERROR").
-//		Build()
+//		Msg("invalid input provided")
 func (b Builder) Code(code string) Builder {
 	if code != "" {
 		b.code = code
@@ -256,9 +245,8 @@ func (b Builder) Code(code string) Builder {
 // Example:
 //
 //	err := fail.New().
-//		Msg("configuration file not found").
 //		ExitCode(2).
-//		Build()
+//		Msg("configuration file not found")
 func (b Builder) ExitCode(exitCode int) Builder {
 	if exitCode > 0 {
 		b.exitCode = exitCode
@@ -274,9 +262,8 @@ func (b Builder) ExitCode(exitCode int) Builder {
 // Example:
 //
 //	err := fail.New().
-//		Msg("user not found").
 //		HttpStatusCode(404).
-//		Build()
+//		Msg("user not found")
 func (b Builder) HttpStatusCode(httpStatusCode int) Builder {
 	if httpStatusCode >= 400 && httpStatusCode < 600 {
 		b.httpStatusCode = httpStatusCode
@@ -292,9 +279,8 @@ func (b Builder) HttpStatusCode(httpStatusCode int) Builder {
 // Example:
 //
 //	err := fail.New().
-//		Msg("request processing failed").
 //		TraceId("abcdef1234567890abcdef1234567890").
-//		Build()
+//		Msg("request processing failed")
 func (b Builder) TraceId(traceId string) Builder {
 	t, err := trace.TraceIDFromHex(traceId)
 	if err == nil {
@@ -311,9 +297,8 @@ func (b Builder) TraceId(traceId string) Builder {
 // Example:
 //
 //	err := fail.New().
-//		Msg("database query failed").
 //		SpanId("1234567890abcdef").
-//		Build()
+//		Msg("database query failed")
 func (b Builder) SpanId(spanId string) Builder {
 	s, err := trace.SpanIDFromHex(spanId)
 	if err == nil {
@@ -340,9 +325,8 @@ func (b Builder) SpanId(spanId string) Builder {
 //	ctx = fail.ContextWithAttributes(ctx, map[string]any{"user_id": "123"})
 //
 //	err := fail.New().
-//		Msg("request failed").
 //		Context(ctx).
-//		Build()
+//		Msg("request failed")
 func (b Builder) Context(ctx context.Context) Builder {
 	res := b
 
@@ -381,9 +365,8 @@ func (b Builder) Context(ctx context.Context) Builder {
 // Example:
 //
 //	err := fail.New().
-//		Msg("database connection failed: connection refused").
 //		UserMsg("We're experiencing technical difficulties. Please try again later.").
-//		Build()
+//		Msg("database connection failed: connection refused")
 func (b Builder) UserMsg(userMsg string) Builder {
 	if userMsg != "" {
 		b.userMsg = userMsg
@@ -400,66 +383,46 @@ func (b Builder) UserMsg(userMsg string) Builder {
 // Example:
 //
 //	err := fail.New().
-//		Msg("rate limit exceeded").
 //		UserMsgf("Too many requests. Please wait %d seconds before trying again.", 60).
-//		Build()
+//		Msg("rate limit exceeded")
 func (b Builder) UserMsgf(format string, args ...any) Builder {
 	return b.UserMsg(fmt.Sprintf(format, args...))
 }
 
-// Msg sets a developer-facing message for the error.
+// Msg sets a developer-facing message for the error and returns the complete Fail error.
 //
 // The developer message is the main error message and is required.
-// If omitted, the message will be set to fail.EmptyMessage upon calling Build().
+// If omitted, the message will be set to fail.EmptyMessage.
 // It provides a concise, stable, and programmatically useful message that describes only the primary error itself, without including details from any wrapped errors or underlying causes.
+// This method is terminal and completes the error construction.
 //
 // Example:
 //
 //	err := fail.New().
-//		Msg("database connection failed").
-//		Build()
-func (b Builder) Msg(msg string) Builder {
+//		Code("DB_CONNECTION_ERROR").
+//		Msg("database connection failed")
+func (b Builder) Msg(msg string) error {
 	if msg != "" {
 		b.msg = msg
-	}
-	return b
-}
-
-// Msgf sets a formatted developer-facing message for the error.
-//
-// This method is a convenience wrapper around Msg() that allows formatting the
-// developer message using fmt.Sprintf. The formatted message should still be concise
-// and stable, suitable for logs or diagnostics.
-//
-// Example:
-//
-//	err := fail.New().
-//		Msgf("failed to connect to database %s on port %d", "localhost", 5432).
-//		Build()
-func (b Builder) Msgf(format string, args ...any) Builder {
-	return b.Msg(fmt.Sprintf(format, args...))
-}
-
-// Build finalizes the builder and returns the constructed Fail error.
-//
-// The built error can be used with all the fail package functions for error introspection and handling.
-//
-// Example:
-//
-//	err := fail.New().
-//		Msg("operation failed").
-//		Code("OPERATION_ERROR").
-//		Tag("critical").
-//		Build()
-//
-//	// Use the built error
-//	fmt.Println(fail.Message(err))     // "operation failed"
-//	fmt.Println(fail.Code(err))        // "OPERATION_ERROR"
-//	fmt.Println(fail.Tags(err))        // ["critical"]
-func (b Builder) Build() Fail {
-	if b.msg == "" {
+	} else {
 		b.msg = EmptyMessage
 	}
 
 	return Fail(b)
+}
+
+// Msgf sets a formatted developer-facing message for the error and returns the complete Fail error.
+//
+// This method is a convenience wrapper around Msg() that allows formatting the
+// developer message using fmt.Sprintf. The formatted message should still be concise
+// and stable, suitable for logs or diagnostics.
+// This method is terminal and completes the error construction.
+//
+// Example:
+//
+//	err := fail.New().
+//		Code("DB_CONNECTION_ERROR").
+//		Msgf("failed to connect to database %s on port %d", "localhost", 5432)
+func (b Builder) Msgf(format string, args ...any) error {
+	return b.Msg(fmt.Sprintf(format, args...))
 }
