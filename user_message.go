@@ -45,3 +45,35 @@ func UserMessage(err error) string {
 
 	return err.Error()
 }
+
+// WithUserMessage returns a new error with the specified user-facing message attached.
+//
+// This function wraps an existing error with a user message string suitable for display to end users.
+// If the provided error is nil, it returns nil. If the userMessage string is empty, the original error is returned unchanged.
+//
+// The returned error will implement the ErrorUserMessage interface, allowing retrieval of the user message via fail.UserMessage.
+//
+// Example:
+//
+//	err := fail.WithUserMessage(primaryErr, "Could not complete your request. Please try again.")
+//
+// The returned error will have the user message attached, which can be accessed using
+// fail.UserMessage(err).
+//
+// Parameters:
+//   - err:         The error to which the user message will be attached.
+//   - userMessage: The user-facing message string to associate with the error.
+//
+// Returns:
+//   - A new error with the user message attached, or nil if err is nil. If userMessage is empty, returns the original error.
+func WithUserMessage(err error, userMessage string) error {
+	if err == nil {
+		return nil
+	}
+
+	if userMessage == "" {
+		return err
+	}
+
+	return From(err).UserMsg(userMessage).asFail()
+}

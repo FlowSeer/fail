@@ -70,3 +70,11 @@ func Code(err error) string {
 
 	return maxCode
 }
+
+func WithCode(err error, code string) error {
+	if err == nil {
+		return nil
+	}
+
+	return From(err).Code(code).asFail()
+}

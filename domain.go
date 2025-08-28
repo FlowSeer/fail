@@ -79,6 +79,40 @@ func Domain(err error) string {
 	return DomainUnknown
 }
 
+// WithDomain returns a new error with the specified domain attached.
+//
+// This function takes an existing error and a domain string, and returns a new error
+// that includes the provided domain. If the provided error is nil, it returns nil.
+// If the domain string is empty, the original error is returned unchanged.
+//
+// The returned error will implement the ErrorDomain interface, and the domain can be
+// retrieved using the fail.Domain function.
+//
+// Example:
+//
+//	err := fail.WithDomain(primaryErr, fail.DomainDatabase)
+//
+// The returned error will have the domain attached, and it can be accessed via
+// fail.Domain(err).
+//
+// Parameters:
+//   - err: The original error to which the domain will be attached.
+//   - domain: The domain string to associate with the error.
+//
+// Returns:
+//   - A new error with the domain attached, or nil if err is nil. If domain is empty, returns the original error.
+func WithDomain(err error, domain string) error {
+	if err == nil {
+		return nil
+	}
+
+	if domain == "" {
+		return err
+	}
+
+	return From(err).Domain(domain).asFail()
+}
+
 // domainContextKey is an unexported type used as the key for storing
 // and retrieving the error domain value in a context.Context.
 type domainContextKey struct{}

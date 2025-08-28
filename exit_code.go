@@ -57,3 +57,37 @@ func ExitCode(err error) int {
 
 	return maxExitCode
 }
+
+// WithExitCode returns a new error with the specified program exit code attached.
+//
+// This function takes an existing error and an integer exit code, and returns a new error
+// that includes the provided exit code. If the provided error is nil, it returns nil.
+// If the exit code is less than or equal to zero, the original error is returned unchanged.
+//
+// The returned error will implement the ErrorExitCode interface, and the exit code can be
+// retrieved using the fail.ExitCode function.
+//
+// Example:
+//
+//	err := fail.WithExitCode(primaryErr, 2)
+//
+// The returned error will have the exit code attached, and it can be accessed via
+// fail.ExitCode(err).
+//
+// Parameters:
+//   - err: The original error to which the exit code will be attached.
+//   - exitCode: The integer exit code to associate with the error.
+//
+// Returns:
+//   - A new error with the exit code attached, or nil if err is nil. If exitCode <= 0, returns the original error.
+func WithExitCode(err error, exitCode int) error {
+	if err == nil {
+		return nil
+	}
+
+	if exitCode <= 0 {
+		return err
+	}
+
+	return From(err).ExitCode(exitCode).asFail()
+}

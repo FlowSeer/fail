@@ -48,6 +48,39 @@ func TraceId(err error) string {
 	return ""
 }
 
+// WithTraceId returns a new error with the specified trace ID attached.
+//
+// This function wraps an existing error with a trace ID string for distributed tracing.
+// If the provided error is nil, it returns nil. If the trace ID string is empty, the original error is returned unchanged.
+// If traceId is non-empty but not a valid hexadecimal trace.TraceID, the returned error will implement ErrorTraceId but return an empty trace ID.
+//
+// The resulting error will implement the ErrorTraceId interface, allowing retrieval of the trace ID via fail.TraceId.
+//
+// Example:
+//
+//	err := fail.WithTraceId(primaryErr, "abcdef1234567890")
+//
+// The returned error will have the trace ID attached, which can be accessed using
+// fail.TraceId(err).
+//
+// Parameters:
+//   - err:     The error to which the trace ID will be attached.
+//   - traceId: The trace ID string to associate with the error.
+//
+// Returns:
+//   - A new error with the trace ID attached, or nil if err is nil. If traceId is empty, returns the original error.
+func WithTraceId(err error, traceId string) error {
+	if err == nil {
+		return nil
+	}
+
+	if traceId == "" {
+		return err
+	}
+
+	return From(err).TraceId(traceId).asFail()
+}
+
 // TraceIdFromContext extracts the trace ID from the provided context using OpenTelemetry.
 //
 // This function returns the trace ID as a string from the current span in the context.

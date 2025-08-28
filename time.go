@@ -38,3 +38,58 @@ func Time(err error) time.Time {
 
 	return time.Time{}
 }
+
+// WithTime returns a new error with the specified time.Time value attached.
+//
+// This function wraps an existing error with a timestamp, which can be useful for
+// diagnostics, logging, or error reporting. If the provided error is nil, it returns nil.
+// If the provided time is the zero value (t.IsZero()), the original error is returned unchanged.
+//
+// The returned error will implement the ErrorTime interface, allowing retrieval of the
+// associated time via fail.Time(err).
+//
+// Example:
+//
+//	err := fail.WithTime(primaryErr, time.Now())
+//
+// The returned error will have the time attached, which can be accessed using
+// fail.Time(err).
+//
+// Parameters:
+//   - err: The error to which the time will be attached.
+//   - t:   The time.Time value to associate with the error.
+//
+// Returns:
+//   - A new error with the time attached, or nil if err is nil. If t is zero, returns the original error.
+func WithTime(err error, t time.Time) error {
+	if err == nil {
+		return nil
+	}
+
+	if t.IsZero() {
+		return err
+	}
+
+	return From(err).Time(t).asFail()
+}
+
+// WithTimeNow returns a new error with the current time attached.
+//
+// This is a convenience function equivalent to calling WithTime(err, time.Now()).
+// If the provided error is nil, it returns nil.
+//
+// Example:
+//
+//	err := fail.WithTimeNow(primaryErr)
+//
+// The returned error will have the current time attached, which can be accessed using
+// fail.Time(err).
+//
+// Parameters:
+//   - err: The error to which the current time will be attached.
+//
+// Returns:
+//   - A new error with the current time attached, or nil if err is nil.
+func WithTimeNow(err error) error {
+	return WithTime(err, time.Now())
+}

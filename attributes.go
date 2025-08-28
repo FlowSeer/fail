@@ -48,6 +48,40 @@ func Attributes(err error) map[string]any {
 	return map[string]any{}
 }
 
+// WithAttributes returns a new error with the given attributes attached.
+//
+// This function takes an existing error and a map of attributes, and returns a new error
+// that includes the provided attributes. If the provided error is nil, it returns nil.
+// If the attrs map is empty or nil, the original error is returned unchanged.
+//
+// The returned error will implement the ErrorAttributes interface, and the attributes
+// can be retrieved using the fail.Attributes function.
+//
+// Example:
+//
+//	err := fail.WithAttributes(primaryErr, map[string]any{"foo": 42, "bar": "baz"})
+//
+// The returned error will have the attributes attached, and they can be accessed via
+// fail.Attributes(err).
+//
+// Parameters:
+//   - err: The original error to which attributes will be attached.
+//   - attrs: A map of key-value attributes to associate with the error.
+//
+// Returns:
+//   - A new error with the attributes attached, or nil if err is nil. If attrs is empty or nil, returns the original error.
+func WithAttributes(err error, attrs map[string]any) error {
+	if err == nil {
+		return nil
+	}
+
+	if len(attrs) == 0 {
+		return err
+	}
+
+	return From(err).AttributeMap(attrs).asFail()
+}
+
 // attributesContextKey is an unexported type used as the key for storing
 // and retrieving error attributes in a context.Context.
 type attributesContextKey struct{}

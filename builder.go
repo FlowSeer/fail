@@ -489,3 +489,8 @@ func (b Builder) Msg(msg string) error {
 func (b Builder) Msgf(format string, args ...any) error {
 	return b.Msg(fmt.Sprintf(format, args...))
 }
+
+// asFail returns the Builder as a Fail error as-is
+func (b Builder) asFail() Fail {
+	return Fail(b)
+}

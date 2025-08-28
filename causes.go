@@ -63,3 +63,37 @@ func Causes(err error) []error {
 
 	return nil
 }
+
+// WithCauses returns a new error with the specified direct causes attached.
+//
+// This function takes an existing error and one or more direct causes, and returns a new error
+// that includes the provided causes. If the provided error is nil, it returns nil. If no causes
+// are provided, the original error is returned unchanged.
+//
+// Causes are errors that directly led to the current error. This is useful for representing
+// error chains or aggregating multiple underlying errors that contributed to the failure.
+//
+// Example:
+//
+//	err := fail.WithCauses(primaryErr, io.EOF, io.ErrClosedPipe)
+//
+// The returned error will implement the ErrorCauses interface, and the causes can be retrieved
+// using fail.Causes(err).
+//
+// Parameters:
+//   - err: The original error to which causes will be attached.
+//   - causes: One or more errors to set as the direct causes of the error.
+//
+// Returns:
+//   - A new error with the causes attached, or nil if err is nil. If no causes are provided, returns the original error.
+func WithCauses(err error, causes ...error) error {
+	if err == nil {
+		return nil
+	}
+
+	if len(causes) == 0 {
+		return err
+	}
+
+	return From(err).Cause(causes...).asFail()
+}

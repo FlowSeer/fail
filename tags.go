@@ -14,6 +14,8 @@ import (
 // Common domains include network issues, configuration problems, database errors,
 // validation failures, authentication issues, rate limiting, and more. You can
 // extend this list as needed to fit your application's requirements.
+//
+//goland:noinspection GoUnusedConst
 const (
 	// TagNetwork represents errors related to network connectivity or communication.
 	TagNetwork = DomainNetwork
@@ -91,6 +93,41 @@ func Tags(err error) []string {
 	}
 
 	return nil
+}
+
+// WithTags returns a new error with the specified tags attached.
+//
+// This function takes an existing error and one or more tag strings, and returns a new error
+// that includes the provided tags. If the provided error is nil, it returns nil.
+// If no tags are provided, the original error is returned unchanged.
+//
+// The returned error will implement the ErrorTags interface, and the tags can be
+// retrieved using the fail.Tags function. Tags are intended to be unique, descriptive
+// strings that can be used for error categorization, filtering, or introspection.
+//
+// Example:
+//
+//	err := fail.WithTags(primaryErr, "network", "timeout")
+//
+// The returned error will have the tags attached, and they can be accessed via
+// fail.Tags(err).
+//
+// Parameters:
+//   - err: The original error to which the tags will be attached.
+//   - tags: One or more tag strings to associate with the error.
+//
+// Returns:
+//   - A new error with the tags attached, or nil if err is nil. If no tags are provided, returns the original error.
+func WithTags(err error, tags ...string) error {
+	if err == nil {
+		return nil
+	}
+
+	if len(tags) == 0 {
+		return err
+	}
+
+	return From(err).Tag(tags...).asFail()
 }
 
 // tagsContextKey is an unexported type used as the key for storing

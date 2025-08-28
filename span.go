@@ -48,6 +48,39 @@ func SpanId(err error) string {
 	return ""
 }
 
+// WithSpanId returns a new error with the specified span ID attached.
+//
+// This function wraps an existing error with a span ID string for distributed tracing.
+// If the provided error is nil, it returns nil. If the span ID string is empty, the original error is returned unchanged.
+// If spanId is non-empty but not a valid hexadecimal trace.SpanID, the returned error will implement ErrorSpanId but return an empty span ID.
+//
+// The resulting error will implement the ErrorSpanId interface, allowing retrieval of the span ID via fail.SpanId.
+//
+// Example:
+//
+//	err := fail.WithSpanId(primaryErr, "1234567890abcdef")
+//
+// The returned error will have the span ID attached, which can be accessed using
+// fail.SpanId(err).
+//
+// Parameters:
+//   - err:    The error to which the span ID will be attached.
+//   - spanId: The span ID string to associate with the error.
+//
+// Returns:
+//   - A new error with the span ID attached, or nil if err is nil. If spanId is empty, returns the original error.
+func WithSpanId(err error, spanId string) error {
+	if err == nil {
+		return nil
+	}
+
+	if spanId == "" {
+		return err
+	}
+
+	return From(err).SpanId(spanId).asFail()
+}
+
 // SpanIdFromContext extracts the span ID from the provided context using OpenTelemetry.
 //
 // This function returns the span ID as a string from the current span in the context.

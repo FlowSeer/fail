@@ -45,3 +45,38 @@ func Associated(err error) []error {
 
 	return nil
 }
+
+// WithAssociated returns a new error with the given associated errors attached.
+//
+// This function takes an existing error and one or more associated errors, and returns a new error
+// that includes the provided associated errors. If no associated errors are provided, it returns the original error.
+// If the provided error is nil, it returns nil.
+//
+// Associated errors are errors that are related to the current error, but are not direct causes.
+// This is useful for representing additional context, such as errors that occurred during cleanup,
+// in parallel operations, or while handling the original error.
+//
+// Example:
+//
+//	err := fail.WithAssociated(primaryErr, cleanupErr, loggingErr)
+//
+// The returned error will implement the ErrorAssociated interface, and the associated errors
+// can be retrieved using the fail.Associated(err) function.
+//
+// Parameters:
+//   - err: The original error to which associated errors will be attached.
+//   - associated: One or more errors to associate with the original error.
+//
+// Returns:
+//   - A new error with the associated errors attached, or nil if err is nil. If no associated errors are provided, returns the original error.
+func WithAssociated(err error, associated ...error) error {
+	if err == nil {
+		return nil
+	}
+
+	if len(associated) == 0 {
+		return err
+	}
+
+	return From(err).Associate(associated...).asFail()
+}

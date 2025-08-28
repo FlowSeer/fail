@@ -58,3 +58,37 @@ func HttpStatusCode(err error) int {
 
 	return maxHttpStatusCode
 }
+
+// WithHttpStatusCode returns a new error with the specified HTTP status code attached.
+//
+// This function takes an existing error and an integer HTTP status code, and returns a new error
+// that includes the provided status code. If the provided error is nil, it returns nil.
+// If the HTTP status code is less than 400, the original error is returned unchanged.
+//
+// The returned error will implement the ErrorHttpStatusCode interface, and the status code can be
+// retrieved using the fail.HttpStatusCode function.
+//
+// Example:
+//
+//	err := fail.WithHttpStatusCode(primaryErr, 404)
+//
+// The returned error will have the HTTP status code attached, and it can be accessed via
+// fail.HttpStatusCode(err).
+//
+// Parameters:
+//   - err: The original error to which the HTTP status code will be attached.
+//   - httpStatusCode: The integer HTTP status code to associate with the error.
+//
+// Returns:
+//   - A new error with the HTTP status code attached, or nil if err is nil. If httpStatusCode < 400, returns the original error.
+func WithHttpStatusCode(err error, httpStatusCode int) error {
+	if err == nil {
+		return nil
+	}
+
+	if httpStatusCode < 400 {
+		return err
+	}
+
+	return From(err).HttpStatusCode(httpStatusCode).asFail()
+}
