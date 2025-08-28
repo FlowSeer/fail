@@ -48,39 +48,6 @@ func newFail(msg string) Fail {
 	}
 }
 
-// From creates a new Fail error from an existing error.
-//
-// If the provided error is already a Fail, it returns a clone of that Fail.
-// Otherwise, it constructs a new Fail by copying all available error details from the source error,
-// including: message, user message, code, exit code, HTTP status code, causes, associated errors,
-// tags, and attributes. Panics if err is nil.
-func From(err error) Fail {
-	if err == nil {
-		panic("cannot create a Fail from a nil error")
-	}
-
-	if f, ok := err.(Fail); ok {
-		return f.Clone()
-	}
-
-	attrs := make(map[string]struct{})
-	for _, t := range Tags(err) {
-		attrs[t] = struct{}{}
-	}
-
-	return Fail{
-		msg:            Message(err),
-		userMsg:        UserMessage(err),
-		code:           Code(err),
-		exitCode:       ExitCode(err),
-		httpStatusCode: HttpStatusCode(err),
-		causes:         Causes(err),
-		associated:     Associated(err),
-		tags:           attrs,
-		attrs:          Attributes(err),
-	}
-}
-
 // Clone returns a deep copy of the Fail error.
 //
 // All fields are copied, including slices and maps, so that modifications to the

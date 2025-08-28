@@ -50,6 +50,44 @@ func New() Builder {
 	return Builder(newFail(""))
 }
 
+// From creates a new Builder initialized from an existing error.
+//
+// If the provided error is already a Fail, it returns a new Builder populated with the same details.
+// Otherwise, it constructs a new Builder by extracting all available error details from the source error,
+// including: message, user message, code, exit code, HTTP status code, causes, associated errors,
+// tags, and attributes. Panics if err is nil.
+//
+// Example:
+//
+//	err := someFunction()
+//	failErr := fail.From(err).Msg("operation failed")
+func From(err error) Builder {
+	if err == nil {
+		panic("cannot create a Fail from a nil error")
+	}
+
+	if f, ok := err.(Fail); ok {
+		return Builder(f.Clone())
+	}
+
+	attrs := make(map[string]struct{})
+	for _, t := range Tags(err) {
+		attrs[t] = struct{}{}
+	}
+
+	return Builder(Fail{
+		msg:            Message(err),
+		userMsg:        UserMessage(err),
+		code:           Code(err),
+		exitCode:       ExitCode(err),
+		httpStatusCode: HttpStatusCode(err),
+		causes:         Causes(err),
+		associated:     Associated(err),
+		tags:           attrs,
+		attrs:          Attributes(err),
+	})
+}
+
 // Time sets the timestamp for when the error occurred.
 //
 // If the provided time is not the zero value and is not in the future, it will be set as the error's time.
