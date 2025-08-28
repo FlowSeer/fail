@@ -24,15 +24,15 @@ func Msgf(format string, args ...any) error {
 	return New().Msgf(format, args...)
 }
 
-// Wrap creates a new Fail error with the given message and wraps the provided error as its cause.
+// Wrap returns a new Fail error with the given message, wrapping the provided error as its cause.
 //
 // If err is nil, Wrap returns nil.
-// This is a shortcut for fail.New().Cause(err).Msg(msg).
+// Equivalent to: fail.New().Cause(err).Msg(msg).
 //
 // Example:
 //
-//	err := fail.Wrap("failed to read file", io.EOF)
-func Wrap(msg string, err error) error {
+//	err := fail.Wrap(io.EOF, "failed to read file")
+func Wrap(err error, msg string) error {
 	if err == nil {
 		return nil
 	}
@@ -40,9 +40,9 @@ func Wrap(msg string, err error) error {
 	return New().Cause(err).Msg(msg)
 }
 
-// Wrapf creates a new Fail error with a formatted message and wraps the provided error as its cause.
+// Wrapf returns a new Fail error with a formatted message, wrapping the provided error as its cause.
 //
-// This is a shortcut for fail.New().Cause(err).Msgf(format, args...).
+// Equivalent to: fail.New().Cause(err).Msgf(format, args...).
 //
 // Example:
 //
@@ -51,10 +51,10 @@ func Wrapf(err error, format string, args ...any) error {
 	return New().Cause(err).Msgf(format, args...)
 }
 
-// WrapMany creates a new Fail error with the given message and wraps multiple errors as its causes.
+// WrapMany returns a new Fail error with the given message, wrapping multiple errors as its causes.
 //
 // If errs is empty, WrapMany returns nil.
-// This is a shortcut for fail.New().CauseSlice(errs).Msg(msg).
+// Equivalent to: fail.New().CauseSlice(errs).Msg(msg).
 //
 // Example:
 //

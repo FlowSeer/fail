@@ -91,7 +91,7 @@ err := fail.Msg("something went wrong")
 err := fail.Msgf("failed to %s", "connect")
 
 // Wrapping errors
-err := fail.Wrap("operation failed", originalError)
+err := fail.Wrap(originalError, "operation failed")
 err := fail.Wrapf(originalError, "failed to %s", "process")
 
 // Multiple causes
