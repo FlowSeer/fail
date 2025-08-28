@@ -48,13 +48,13 @@ func newFail(msg string) Fail {
 	}
 }
 
-// newFailFrom creates a new Fail error from an existing error.
+// From creates a new Fail error from an existing error.
 //
 // If the provided error is already a Fail, it returns a clone of that Fail.
 // Otherwise, it constructs a new Fail by copying all available error details from the source error,
 // including: message, user message, code, exit code, HTTP status code, causes, associated errors,
 // tags, and attributes. Panics if err is nil.
-func newFailFrom(err error) Fail {
+func From(err error) Fail {
 	if err == nil {
 		panic("cannot create a Fail from a nil error")
 	}
