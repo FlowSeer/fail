@@ -1,6 +1,8 @@
 package fail
 
 import (
+	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/FlowSeer/wz/maps"
@@ -140,4 +142,63 @@ func (f Fail) ErrorAttributes() map[string]any {
 // Implements ErrorTime interface.
 func (f Fail) ErrorTime() time.Time {
 	return f.time
+}
+
+// ErrorTraceId returns the traceId associated with this error.
+//
+// Implements ErrorTraceId interface.
+func (f Fail) ErrorTraceId() string {
+	return f.traceId
+}
+
+// ErrorSpanId returns the spanId associated with this error.
+//
+// Implements ErrorSpanId interface.
+func (f Fail) ErrorSpanId() string {
+	return f.spanId
+}
+
+// LogValue returns a slog.Value representation of the Fail error.
+//
+// Implements slog.Value interface.
+func (f Fail) LogValue() slog.Value {
+	var attrs []slog.Attr
+	if f.msg != "" {
+		attrs = append(attrs, slog.String("msg", f.msg))
+	}
+	if f.userMsg != "" {
+		attrs = append(attrs, slog.String("user_msg", f.userMsg))
+	}
+	if f.code != "" {
+		attrs = append(attrs, slog.String("code", f.code))
+	}
+	if f.exitCode != 0 {
+		attrs = append(attrs, slog.Int("exit_code", f.exitCode))
+	}
+	if f.httpStatusCode != 0 {
+		attrs = append(attrs, slog.Int("http_status_code", f.httpStatusCode))
+	}
+	if f.domain != "" {
+		attrs = append(attrs, slog.String("domain", f.domain))
+	}
+	if f.spanId != "" {
+		attrs = append(attrs, slog.String("span_id", f.spanId))
+	}
+	if f.traceId != "" {
+		attrs = append(attrs, slog.String("trace_id", f.traceId))
+	}
+	if len(f.tags) > 0 {
+		attrs = append(attrs, slog.String("tags", strings.Join(f.ErrorTags(), ",")))
+	}
+	if len(f.attrs) > 0 {
+		var attrAttrs []any
+
+		for k, v := range f.attrs {
+			attrAttrs = append(attrAttrs, slog.Any(k, v))
+		}
+
+		attrs = append(attrs, slog.Group("attrs", attrAttrs...))
+	}
+
+	return slog.GroupValue(attrs...)
 }

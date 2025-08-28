@@ -117,35 +117,35 @@ func printJson(err error, opts ...PrinterOption) string {
 	if o.ExitCode {
 		exitCode := fail.ExitCode(err)
 		if exitCode > 0 {
-			data["exitCode"] = exitCode
+			data["exit_code"] = exitCode
 		}
 	}
 
 	if o.HttpStatusCode {
 		httpStatusCode := fail.HttpStatusCode(err)
 		if httpStatusCode > 0 {
-			data["httpStatusCode"] = httpStatusCode
+			data["http_status_code"] = httpStatusCode
 		}
 	}
 
 	if o.UserMsg {
 		userMsg := fail.UserMessage(err)
 		if userMsg != "" {
-			data["userMsg"] = userMsg
+			data["user_msg"] = userMsg
 		}
 	}
 
 	if o.TraceId {
 		traceId := fail.TraceId(err)
 		if traceId != "" {
-			data["traceId"] = traceId
+			data["trace_id"] = traceId
 		}
 	}
 
 	if o.SpanId {
 		spanId := fail.SpanId(err)
 		if spanId != "" {
-			data["spanId"] = spanId
+			data["span_id"] = spanId
 		}
 	}
 
