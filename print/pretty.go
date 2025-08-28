@@ -1,6 +1,6 @@
 package print
 
-import "fail"
+import "github.com/FlowSeer/fail"
 
 // Pretty returns a human-readable string representation of the provided error.
 //

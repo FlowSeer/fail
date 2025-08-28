@@ -2,9 +2,10 @@ package print
 
 import (
 	"encoding/json"
-	"fail"
 	"strings"
 	"time"
+
+	"github.com/FlowSeer/fail"
 )
 
 // Json returns a JSON-formatted string representation of the provided error.
