@@ -1,4 +1,4 @@
-package print
+package printer
 
 // Printer is an interface for formatting errors as strings.
 //
