@@ -11,6 +11,8 @@ import "context"
 // validation failures, authentication issues, rate limiting, and more. You can
 // extend this list as needed to fit your application's requirements.
 const (
+	// DomainUnspecified represents an error with an unspecified domain.
+	DomainUnspecified = ""
 	// DomainUnknown represents an unknown or uncategorized error domain.
 	DomainUnknown = "unknown"
 	// DomainNetwork represents errors related to network connectivity or communication.
@@ -56,7 +58,7 @@ type ErrorDomain interface {
 //
 // If the error is nil, Domain returns an empty string. If the error implements
 // ErrorDomain, Domain returns the result of its ErrorDomain() method. Otherwise,
-// it returns DomainUnknown.
+// it returns DomainUnspecified.
 //
 // Example usage:
 //
@@ -76,7 +78,7 @@ func Domain(err error) string {
 		return domain.ErrorDomain()
 	}
 
-	return DomainUnknown
+	return DomainUnspecified
 }
 
 // WithDomain returns a new error with the specified domain attached.
@@ -131,7 +133,7 @@ func ContextWithDomain(ctx context.Context, domain string) context.Context {
 }
 
 // DomainFromContext extracts the error domain string from the provided context.
-// If no domain is set in the context, DomainUnknown is returned.
+// If no domain is set in the context, DomainUnspecified is returned.
 //
 // Example usage:
 //
@@ -139,7 +141,8 @@ func ContextWithDomain(ctx context.Context, domain string) context.Context {
 func DomainFromContext(ctx context.Context) string {
 	domain, ok := ctx.Value(domainContextKey{}).(string)
 	if !ok {
-		return DomainUnknown
+		return DomainUnspecified
 	}
+
 	return domain
 }

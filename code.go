@@ -1,8 +1,78 @@
 package fail
 
-// DefaultErrorCode is the fallback error code returned by Code if no specific code is set
-// and no code is found in any error in the chain.
-const DefaultErrorCode = "ERR_UNKNOWN"
+// Error code constants for canonical programmatic error codes.
+const (
+	// ErrCodeUnspecified is the default error code for unknown or unspecified errors.
+	ErrCodeUnspecified = "ERR_UNKNOWN"
+	// ErrCodeUnknown is an alias for ErrCodeUnspecified.
+	ErrCodeUnknown = ErrCodeUnspecified
+
+	// Validation errors
+	// ErrCodeValidation indicates a general validation failure.
+	ErrCodeValidation = "ERR_VALIDATION"
+	// ErrCodeInvalidInput indicates that input data is invalid.
+	ErrCodeInvalidInput = "ERR_INVALID_INPUT"
+	// ErrCodeMissingRequired indicates a required value is missing.
+	ErrCodeMissingRequired = "ERR_MISSING_REQUIRED"
+	// ErrCodeInvalidFormat indicates data is in an invalid format.
+	ErrCodeInvalidFormat = "ERR_INVALID_FORMAT"
+	// ErrCodeOutOfRange indicates a value is outside the allowed range.
+	ErrCodeOutOfRange = "ERR_OUT_OF_RANGE"
+
+	// Authentication and authorization errors
+	// ErrCodeUnauthorized indicates the user is not authorized.
+	ErrCodeUnauthorized = "ERR_UNAUTHORIZED"
+	// ErrCodeForbidden indicates access is forbidden.
+	ErrCodeForbidden = "ERR_FORBIDDEN"
+	// ErrCodeAuthentication indicates a general authentication failure.
+	ErrCodeAuthentication = "ERR_AUTHENTICATION"
+	// ErrCodeTokenExpired indicates an authentication token has expired.
+	ErrCodeTokenExpired = "ERR_TOKEN_EXPIRED"
+	// ErrCodeInvalidToken indicates an authentication token is invalid.
+	ErrCodeInvalidToken = "ERR_INVALID_TOKEN"
+
+	// Resource errors
+	// ErrCodeNotFound indicates a requested resource was not found.
+	ErrCodeNotFound = "ERR_NOT_FOUND"
+	// ErrCodeAlreadyExists indicates a resource already exists.
+	ErrCodeAlreadyExists = "ERR_ALREADY_EXISTS"
+	// ErrCodeConflict indicates a resource conflict.
+	ErrCodeConflict = "ERR_CONFLICT"
+	// ErrCodeResourceGone indicates a resource is no longer available.
+	ErrCodeResourceGone = "ERR_RESOURCE_GONE"
+
+	// Network and communication errors
+	// ErrCodeNetwork indicates a general network error.
+	ErrCodeNetwork = "ERR_NETWORK"
+	// ErrCodeTimeout indicates a timeout occurred.
+	ErrCodeTimeout = "ERR_TIMEOUT"
+	// ErrCodeConnection indicates a connection error.
+	ErrCodeConnection = "ERR_CONNECTION"
+	// ErrCodeUnreachable indicates a resource or service is unreachable.
+	ErrCodeUnreachable = "ERR_UNREACHABLE"
+
+	// System and infrastructure errors
+	// ErrCodeInternal indicates an internal system error.
+	ErrCodeInternal = "ERR_INTERNAL"
+	// ErrCodeServiceUnavailable indicates a service is unavailable.
+	ErrCodeServiceUnavailable = "ERR_SERVICE_UNAVAILABLE"
+	// ErrCodeDatabase indicates a database error.
+	ErrCodeDatabase = "ERR_DATABASE"
+	// ErrCodeStorage indicates a storage error.
+	ErrCodeStorage = "ERR_STORAGE"
+	// ErrCodeConfiguration indicates a configuration error.
+	ErrCodeConfiguration = "ERR_CONFIGURATION"
+
+	// Business logic errors
+	// ErrCodeBusinessRule indicates a business rule violation.
+	ErrCodeBusinessRule = "ERR_BUSINESS_RULE"
+	// ErrCodeQuotaExceeded indicates a quota has been exceeded.
+	ErrCodeQuotaExceeded = "ERR_QUOTA_EXCEEDED"
+	// ErrCodeRateLimited indicates a rate limit has been exceeded.
+	ErrCodeRateLimited = "ERR_RATE_LIMITED"
+	// ErrCodeMaintenance indicates the system is in maintenance mode.
+	ErrCodeMaintenance = "ERR_MAINTENANCE"
+)
 
 // ErrorCode is an error type that provides a canonical, programmatic error code.
 //
@@ -52,7 +122,7 @@ func Code(err error) string {
 	}
 
 	// Otherwise, check causes and return the code from the cause with the highest exit code.
-	maxCode := DefaultErrorCode
+	maxCode := ErrCodeUnspecified
 	maxExitCode := 0
 	for _, cause := range Causes(err) {
 		causeExitCode := ExitCode(cause)
@@ -62,7 +132,7 @@ func Code(err error) string {
 		if causeExitCode > maxExitCode {
 			maxExitCode = causeExitCode
 			maxCode = causeCode
-		} else if maxCode == DefaultErrorCode && causeCode != DefaultErrorCode {
+		} else if maxCode == ErrCodeUnspecified && causeCode != ErrCodeUnspecified {
 			// If no better code has been found yet, use the first non-default code.
 			maxCode = causeCode
 		}

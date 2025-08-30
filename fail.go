@@ -42,7 +42,7 @@ type Fail struct {
 func newFail(msg string) Fail {
 	return Fail{
 		msg:            msg,
-		code:           DefaultErrorCode,
+		code:           ErrCodeUnspecified,
 		exitCode:       DefaultExitCode,
 		httpStatusCode: DefaultHttpStatusCode,
 		tags:           make(map[string]struct{}),
