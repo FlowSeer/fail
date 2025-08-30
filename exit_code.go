@@ -1,5 +1,7 @@
 package fail
 
+import "os"
+
 // DefaultExitCode is the default exit code to use when no specific exit code is set.
 const DefaultExitCode = 1
 
@@ -56,6 +58,18 @@ func ExitCode(err error) int {
 	}
 
 	return maxExitCode
+}
+
+// Exit exits the program with the exit code of the provided error.
+//
+// This function takes an error and exits the program with the exit code of the error.
+// If the error is nil, it exits with code 0.
+//
+// Example:
+//
+//	fail.Exit(err)
+func Exit(err error) {
+	os.Exit(ExitCode(err))
 }
 
 // WithExitCode returns a new error with the specified program exit code attached.
