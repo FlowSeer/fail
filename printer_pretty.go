@@ -1,8 +1,6 @@
-package printer
+package fail
 
-import "github.com/FlowSeer/fail"
-
-// Pretty returns a human-readable string representation of the provided error.
+// PrintPretty returns a human-readable string representation of the provided error.
 //
 // This function uses the default PrettyPrinter to format the error. It is suitable
 // for displaying errors in logs, user interfaces, or diagnostics where a readable
@@ -11,8 +9,8 @@ import "github.com/FlowSeer/fail"
 // Example:
 //
 //	err := fail.New().Msg("something went wrong")
-//	out := print.Pretty(err)
-func Pretty(err error) string {
+//	out := print.PrintPretty(err)
+func PrintPretty(err error) string {
 	return PrettyPrinter().Print(err)
 }
 
@@ -34,8 +32,8 @@ func PrettyPrinter(opts ...PrinterOption) Printer {
 
 // printPretty formats the provided error as a human-readable string according to the given PrinterOptions.
 //
-// This is an internal helper used by PrettyPrinter and Pretty. Currently, it returns only the error message.
+// This is an internal helper used by PrettyPrinter and PrintPretty. Currently, it returns only the error message.
 // In the future, it may be extended to include more error metadata.
 func printPretty(err error, opts ...PrinterOption) string {
-	return fail.Message(err)
+	return Message(err)
 }

@@ -69,9 +69,13 @@ func (f Fail) Clone() Fail {
 	}
 }
 
+func (f Fail) String() string {
+	return f.Error()
+}
+
 // Error returns the main error message.
 func (f Fail) Error() string {
-	return f.msg
+	return PrintPretty(f)
 }
 
 // ErrorCauses returns the direct causes of this error.

@@ -1,4 +1,4 @@
-package printer
+package fail
 
 import "time"
 
@@ -72,136 +72,136 @@ func DefaultOptions() PrinterOptions {
 // or customizing a Printer.
 type PrinterOption func(*PrinterOptions)
 
-// WithIndent sets the indentation level (number of spaces) for nested errors.
+// PrintIndent sets the indentation level (number of spaces) for nested errors.
 //
-// Example: print.WithIndent(4)
-func WithIndent(indent int) PrinterOption {
+// Example: print.PrintIndent(4)
+func PrintIndent(indent int) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.Indent = indent
 	}
 }
 
-// WithColor enables or disables ANSI color output.
+// PrintColor enables or disables ANSI color output.
 //
 // Example: print.WithColor(false)
-func WithColor(color bool) PrinterOption {
+func PrintColor(color bool) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.Color = color
 	}
 }
 
-// WithTime enables or disables printing the error's timestamp.
+// PrintTime enables or disables printing the error's timestamp.
 //
 // Example: print.WithTime(false)
-func WithTime(time bool) PrinterOption {
+func PrintTime(time bool) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.Time = time
 	}
 }
 
-// WithTimeFormat sets the layout for formatting the time, if time printing is enabled.
+// PrintTimeFormat sets the layout for formatting the time, if time printing is enabled.
 //
-// Example: print.WithTimeFormat(time.RFC1123)
-func WithTimeFormat(timeFormat string) PrinterOption {
+// Example: print.PrintTimeFormat(time.RFC1123)
+func PrintTimeFormat(timeFormat string) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.TimeFormat = timeFormat
 	}
 }
 
-// WithAssociated enables or disables printing associated (non-causal) errors.
+// PrintAssociated enables or disables printing associated (non-causal) errors.
 //
-// Example: print.WithAssociated(false)
-func WithAssociated(associated bool) PrinterOption {
+// Example: print.PrintAssociated(false)
+func PrintAssociated(associated bool) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.Associated = associated
 	}
 }
 
-// WithCauses enables or disables printing direct causes of the error.
+// PrintCauses enables or disables printing direct causes of the error.
 //
-// Example: print.WithCauses(false)
-func WithCauses(causes bool) PrinterOption {
+// Example: print.PrintCauses(false)
+func PrintCauses(causes bool) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.Causes = causes
 	}
 }
 
-// WithTags enables or disables printing error tags.
+// PrintTags enables or disables printing error tags.
 //
-// Example: print.WithTags(false)
-func WithTags(tags bool) PrinterOption {
+// Example: print.PrintTags(false)
+func PrintTags(tags bool) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.Tags = tags
 	}
 }
 
-// WithAttributes enables or disables printing error attributes.
+// PrintAttributes enables or disables printing error attributes.
 //
-// Example: print.WithAttributes(false)
-func WithAttributes(attributes bool) PrinterOption {
+// Example: print.PrintAttributes(false)
+func PrintAttributes(attributes bool) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.Attributes = attributes
 	}
 }
 
-// WithCode enables or disables printing the error code.
+// PrintCode enables or disables printing the error code.
 //
-// Example: print.WithCode(false)
-func WithCode(code bool) PrinterOption {
+// Example: print.PrintCode(false)
+func PrintCode(code bool) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.Code = code
 	}
 }
 
-// WithDomain enables or disables printing the error domain.
+// PrintDomain enables or disables printing the error domain.
 //
-// Example: print.WithDomain(false)
-func WithDomain(domain bool) PrinterOption {
+// Example: print.PrintDomain(false)
+func PrintDomain(domain bool) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.Domain = domain
 	}
 }
 
-// WithExitCode enables or disables printing the process exit code.
+// PrintExitCode enables or disables printing the process exit code.
 //
-// Example: print.WithExitCode(false)
-func WithExitCode(exitCode bool) PrinterOption {
+// Example: print.PrintExitCode(false)
+func PrintExitCode(exitCode bool) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.ExitCode = exitCode
 	}
 }
 
-// WithHttpStatusCode enables or disables printing the HTTP status code.
+// PrintHttpStatusCode enables or disables printing the HTTP status code.
 //
-// Example: print.WithHttpStatusCode(false)
-func WithHttpStatusCode(httpStatusCode bool) PrinterOption {
+// Example: print.PrintHttpStatusCode(false)
+func PrintHttpStatusCode(httpStatusCode bool) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.HttpStatusCode = httpStatusCode
 	}
 }
 
-// WithUserMsg enables or disables printing the user-facing message.
+// PrintUserMsg enables or disables printing the user-facing message.
 //
-// Example: print.WithUserMsg(false)
-func WithUserMsg(userMsg bool) PrinterOption {
+// Example: print.PrintUserMsg(false)
+func PrintUserMsg(userMsg bool) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.UserMsg = userMsg
 	}
 }
 
-// WithTraceId enables or disables printing the trace ID.
+// PrintTraceId enables or disables printing the trace ID.
 //
-// Example: print.WithTraceId(false)
-func WithTraceId(traceId bool) PrinterOption {
+// Example: print.PrintTraceId(false)
+func PrintTraceId(traceId bool) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.TraceId = traceId
 	}
 }
 
-// WithSpanId enables or disables printing the span ID.
+// PrintSpanId enables or disables printing the span ID.
 //
-// Example: print.WithSpanId(false)
-func WithSpanId(spanId bool) PrinterOption {
+// Example: print.PrintSpanId(false)
+func PrintSpanId(spanId bool) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.SpanId = spanId
 	}
