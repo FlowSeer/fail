@@ -50,6 +50,22 @@ func New() Builder {
 	return Builder(newFail(""))
 }
 
+// NewC creates a new Builder and attaches context information from the provided context.Context.
+//
+// The returned Builder will have default values for code (DefaultErrorCode),
+// exit code (DefaultExitCode), and HTTP status code (DefaultHttpStatusCode).
+// The message must be set using Msg() or Msgf() to complete the error construction.
+// If no message is set, the message will be set to fail.EmptyMessage.
+// The timestamp will be automatically set to the current time when the error is built
+// if not explicitly set using the Time() method.
+//
+// Example:
+//
+//	builder := fail.NewC(ctx)
+func NewC(ctx context.Context) Builder {
+	return Builder(newFail("")).Context(ctx)
+}
+
 // From creates a new Builder initialized from an existing error.
 //
 // If the provided error is already a Fail, it returns a new Builder populated with the same details.
