@@ -6,7 +6,23 @@ import (
 	"time"
 )
 
-// PrintJson returns a JSON-formatted string representation of the provided error.
+// PrintJson prints a JSON-formatted string representation of the provided error to standard output.
+//
+// This function uses the default JSON printer with the given PrinterOptions to
+// serialize the error and its metadata (such as causes, associated errors, codes, tags, etc.)
+// into a JSON string. It is suitable for logging, diagnostics, or API responses.
+//
+// Example:
+//
+//	err := fail.New().Msg("something went wrong")
+//	print.PrintJson(err)
+//
+// The output format and included fields can be customized using PrinterOptions.
+func PrintJson(err error, opts ...PrinterOption) {
+	println(PrintsJson(err, opts...))
+}
+
+// PrintsJson returns a JSON-formatted string representation of the provided error.
 //
 // If the error is nil, this function returns the string "null" (the JSON null value).
 //
@@ -17,10 +33,10 @@ import (
 // Example:
 //
 //	err := fail.New().Msg("something went wrong")
-//	jsonStr := print.PrintJson(err)
+//	jsonStr := print.PrintsJson(err)
 //
 // The output format and included fields can be customized using PrinterOptions.
-func PrintJson(err error, opts ...PrinterOption) string {
+func PrintsJson(err error, opts ...PrinterOption) string {
 	return JsonPrinter(opts...).Print(err)
 }
 

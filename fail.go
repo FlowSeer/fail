@@ -75,7 +75,7 @@ func (f Fail) String() string {
 
 // Error returns the main error message.
 func (f Fail) Error() string {
-	return PrintPretty(f)
+	return PrintsPretty(f)
 }
 
 // ErrorCauses returns the direct causes of this error.

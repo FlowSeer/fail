@@ -22,6 +22,9 @@ type PrinterOptions struct {
 	Associated bool
 	// Causes enables printing direct causes of the error if true.
 	Causes bool
+	// CauseDepth is the maximum recursion depth to print causes.
+	// If 0, all causes are printed.
+	CauseDepth int
 	// Tags enables printing error tags if true.
 	Tags bool
 	// Attributes enables printing error attributes if true.
@@ -123,6 +126,15 @@ func PrintAssociated(associated bool) PrinterOption {
 func PrintCauses(causes bool) PrinterOption {
 	return func(opts *PrinterOptions) {
 		opts.Causes = causes
+	}
+}
+
+// PrintCauseDepth sets the recursion depth of causes to print.
+//
+// Example: print.PrintTags(false)
+func PrintCauseDepth(depth int) PrinterOption {
+	return func(opts *PrinterOptions) {
+		opts.CauseDepth = depth
 	}
 }
 
