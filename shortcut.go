@@ -136,3 +136,14 @@ func WrapManyC(ctx context.Context, msg string, errs ...error) error {
 
 	return NewC(ctx).CauseSlice(errs).Msg(msg)
 }
+
+// WithContext adds information from the provided context to the error.
+//
+// If err is nil, WithContext returns nil.
+func WithContext(err error, ctx context.Context) error {
+	if err == nil {
+		return nil
+	}
+
+	return From(err).Context(ctx).asFail()
+}
