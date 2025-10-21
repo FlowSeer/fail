@@ -1,6 +1,8 @@
 package fail
 
-import "context"
+import (
+	"context"
+)
 
 // Msg creates a new Fail error with the given developer-facing message.
 //
@@ -66,6 +68,28 @@ func Wrap(err error, msg string) error {
 	return New().Cause(err).Msg(msg)
 }
 
+// WrapResult calls the provided function fn, and if it returns a non-nil error,
+// wraps that error using fail.Wrap with the given message. The result value is
+// returned as-is. This helper is commonly used to propagate errors with context
+// when working in functional or result-oriented code.
+//
+// Usage:
+//
+//	result, err := fail.WrapResult(doSomething, "failed operation")
+//	if err != nil {
+//	    handle(err) // err is wrapped with message "failed operation"
+//	} else {
+//	    use(result)
+//	}
+//
+// It is especially helpful in higher-order patterns:
+//
+//	handle(fail.WrapResult(action, "failed some action"))
+func WrapResult[T any](fn func() (T, error), msg string) (T, error) {
+	res, err := fn()
+	return res, Wrap(err, msg)
+}
+
 // WrapC creates a new Fail error with the given message, wrapping the provided error as its cause and context.
 //
 // If err is nil, WrapC returns nil.
@@ -82,6 +106,26 @@ func WrapC(ctx context.Context, err error, msg string) error {
 	return NewC(ctx).Cause(err).Msg(msg)
 }
 
+// WrapCResult executes the provided function fn, and if it returns a non-nil error,
+// wraps that error with additional context using the given message and context.
+// The result value is returned as-is. This is useful when you need to propagate
+// error context with a message and a context.Context.
+//
+// Usage:
+//
+//	val, err := fail.WrapCResult(ctx, someFunc, "failed to perform operation")
+//	if err != nil {
+//	    handle(err) // err is wrapped with message and context
+//	} else {
+//	    use(val)
+//	}
+//
+// Equivalent to calling: result, err := fn(); err = fail.WrapC(ctx, err, msg)
+func WrapCResult[T any](ctx context.Context, fn func() (T, error), msg string) (T, error) {
+	res, err := fn()
+	return res, WrapC(ctx, err, msg)
+}
+
 // Wrapf returns a new Fail error with a formatted message, wrapping the provided error as its cause.
 //
 // Equivalent to: fail.New().Cause(err).Msgf(format, args...).
@@ -91,6 +135,11 @@ func WrapC(ctx context.Context, err error, msg string) error {
 //	err := fail.Wrapf(io.EOF, "failed to read file %q", filename)
 func Wrapf(err error, format string, args ...any) error {
 	return New().Cause(err).Msgf(format, args...)
+}
+
+func WrapfResult[T any](fn func() (T, error), format string, args ...any) (T, error) {
+	res, err := fn()
+	return res, Wrapf(err, format, args...)
 }
 
 // WrapCf creates a new Fail error with a formatted message, wrapping the provided error as its cause and context.
@@ -103,6 +152,27 @@ func Wrapf(err error, format string, args ...any) error {
 //	err := fail.WrapCf(ctx, io.EOF, "failed to read file %q", filename)
 func WrapCf(ctx context.Context, err error, format string, args ...any) error {
 	return NewC(ctx).Cause(err).Msgf(format, args...)
+}
+
+// WrapCfResult executes the provided function fn, and if it returns a non-nil error,
+// wraps that error with a formatted message using the specified context and format string.
+//
+// This is useful when you want to add both context.Context and a formatted message to an error
+// returned by a function, and still return the result value transparently.
+//
+// Usage:
+//
+//	val, err := fail.WrapCfResult(ctx, someFunc, "failed to process item %d", id)
+//	if err != nil {
+//	    handle(err) // err is wrapped with context and formatted message
+//	} else {
+//	    use(val)
+//	}
+//
+// Equivalent to calling: result, err := fn(); err = fail.WrapCf(ctx, err, format, args...)
+func WrapCfResult[T any](ctx context.Context, fn func() (T, error), format string, args ...any) (T, error) {
+	res, err := fn()
+	return res, WrapCf(ctx, err, format, args...)
 }
 
 // WrapMany returns a new Fail error with the given message, wrapping multiple errors as its causes.
